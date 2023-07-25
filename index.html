@@ -1,0 +1,196 @@
+<html lang="en">
+<head>
+ <meta name="viewport" content="width=device-width", initial-scale=1", charset=UTF-8>
+ <title> Narrative Viz Project </title>
+ <link rel="stylesheet" type = "text/css" href="mystyle.css">
+</head>
+
+<h1>Cumulative Covid-19 Report in US from 2020 to 2023.</h1>
+
+<p1> The data is the product of dozens of journalists working across several time zones to monitor news conferences, analyze data releases and seek clarification from public officials on how they categorize cases. </p1>
+<p></p>
+<div class="btn-group">
+  <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/index.html'"> US Cases</button>
+  <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/US-Deaths-Report.html'"> US Deaths</button>
+  <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/US-States-Cases-Report.html'"> US States Cases
+   </button>
+  <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/US-States-Death-Report.html'"> US States Deaths</button>
+</div>
+<br><br>
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Load d3-annotation -->
+
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<body onload='init()'>
+
+<!-- Rectangular box positioned at (200px, 100px) on the page -->
+<div class="rectangle">
+    <h4> First Covid Case</h4>
+    <p> CDC reported the first laboratory-confirmed case of the 2019 Novel Coronavirus in the U.S. from samples taken on January 18, 2020 in Washington state and on the same day activates its Emergency Operations Center (EOC) to respond to the emerging outbreak.</p>
+    <h4>First Peak in Cases</h4>
+    <p> The largest peak in hospitalizations occurred in December 2020 and January 2021, aligning with the largest peak in reported case rates.</p>
+    <h4>Second Peak in Cases</h4>
+    <p> Cases rose again around holiday seasons in December 2021, even after the vaccinations are in progress, raises concerns on the vaccinations.</p>
+</div>
+
+<script>
+
+// set the dimensions and margins of the graph
+var margin = {top: 50, right: 50, bottom: 50, left: 100},
+    width = 800 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+//Read the data
+  d3.csv("https://raw.githubusercontent.com/Lp18-illinois/Narrative-Viz-project/main/us.csv", 
+
+  function(data) {  
+    data.forEach(function(d) {
+       d.date = new Date(d.date);
+       d.cases = new Number(d.cases);});
+  
+       console.log(data);
+
+// define scales 
+    const xScale = d3.scaleTime().domain(d3.extent(data, d => new Date(d.date))).range([0,width]);
+    const yScale = d3.scaleLinear().domain(d3.extent(data, d=> d.cases)).range([height,0]);
+
+// Features of the annotation
+    const annotations1 = [
+    { note: {
+      label: "Saw First Peak",
+      title: "Holiday Season"
+    },
+    x: 190,
+    y: 300,
+    dy: -20,
+    dx: -20
+    }]
+
+    const annotations2 = [
+    { note: {
+      label: "Saw Second Peak",
+      title: "Holiday Season"
+    },
+    x: 405,
+    y: 130,
+    dy: -20,
+    dx: -20
+    }]
+
+// Add annotation to the chart
+    const makeAnnotations1 = d3.annotation()
+        .annotations(annotations1)
+
+    const makeAnnotations2 = d3.annotation()
+        .annotations(annotations2)
+
+    const lineGen = d3.line()
+                      .x(d => xScale(d.date))
+                      .y(d => yScale(d.cases));
+
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
+ 
+//Initialize the chart with first Filter for First Scene.
+  svg
+    .append("path")
+    .datum(data)
+    .attr("fill", "none")
+    .attr("stroke", "steelblue")
+    .attr("stroke-width", 3)
+    .attr("d", lineGen);
+
+    svg.append("g")
+       .attr("class", "x-axis")
+       .attr("transform", "translate(0,400)")
+       .call(xAxis);
+ 
+    svg.append("g")
+       .attr("class", "y-axis")
+       .attr("transform", "translate(0,0)")
+       .call(yAxis);
+
+// Add X axis label:
+    svg.append("text")
+       .attr("text-anchor", "middle")
+       .attr("x", width / 2)
+       .attr("y", height + margin.top - 10)
+       .text("Quarters");
+
+// Add Y axis label:
+    svg.append("text")
+       .attr("text-anchor", "middle")
+       .attr("transform", "rotate(-90)")
+       .attr("y", -margin.left + margin.top - 10)
+       .attr("x", -height/2)
+       .text("Cases");
+
+// Add Chart Title :
+  svg.append("text")
+    .attr("x", width / 2 )
+    .attr("y", -20)
+    .style("text-anchor", "middle")
+    .text("**********  US Cases  **********");
+  
+//Create Annotations 
+    svg.append("g")
+      .call(makeAnnotations1);
+
+    svg.append("g")
+      .call(makeAnnotations2);
+
+    svg.append("line")
+       .attr("x1", 180)
+       .attr("y1", 0)
+       .attr("x2", 180)
+       .attr("y2", 400)
+       .attr("stroke-dasharray", "10", "20")
+       .attr("stroke", "grey")
+       .attr("fill-opacity",".5");
+
+    svg.append("line")
+       .attr("x1", 200)
+       .attr("y1", 0)
+       .attr("x2", 200)
+       .attr("y2", 400)
+       .attr("stroke-dasharray", "10", "20")
+       .attr("stroke", "grey")
+       .attr("fill-opacity",".5");
+
+    svg.append("line")
+       .attr("x1", 395)
+       .attr("y1", 0)
+       .attr("x2", 395)
+       .attr("y2", 400)
+       .attr("fill-opacity","0.1")
+       .attr("stroke-dasharray", "10", "20")
+       .attr("stroke", "grey");
+
+    svg.append("line")
+       .attr("x1", 415)
+       .attr("y1", 0)
+       .attr("x2", 415)
+       .attr("y2", 400)
+       .attr("fill-opacity","0.1")
+       .attr("stroke-dasharray", "10", "20")
+       .attr("stroke", "grey");
+})
+
+</script>
+</body>
+</html>
