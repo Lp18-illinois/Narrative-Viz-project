@@ -1,0 +1,313 @@
+<html lang="en">
+<head>
+ <meta name="viewport" content="width=device-width", initial-scale=1", charset=UTF-8>
+ <title> Narrative Viz Project </title>
+ <link rel="stylesheet" type = "text/css" href="mystyle.css">
+</head>
+
+<h1>Cumulative Covid-19 Report in US from 2020 to 2023.</h1>
+
+<p1> The data is the product of dozens of journalists working across several time zones to monitor news conferences, analyze data releases and seek clarification from public officials on how they categorize cases. </p1>
+<p></p>
+<div class="btn-group">
+  <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/index.html'"> US Cases </button>
+  <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USdeathsReport.html'"> US Deaths </button>
+  <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesCasesReport.html'"> US States Cases </button>
+  <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesDeathsReport.html'"> US States Deaths </button>
+</div>
+<br>
+State: <select name="stateSelect" id="stateButton"></select>
+
+<!-- Load d3.js -->
+<script src="https://d3js.org/d3.v4.js"></script>
+
+<!-- Load d3-annotation -->
+
+<script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
+
+<!-- Color Scale -->
+<script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+
+<!-- Create a div where the graph will take place -->
+<div id="my_dataviz"></div>
+
+<body onload='init()'>
+
+<!-- Rectangular box positioned at (200px, 100px) on the page -->
+<div class="rectangle">
+    <h4> First Covid Case</h4>
+    <p> CDC reports the first laboratory-confirmed case of the 2019 Novel Coronavirus in the U.S. from samples taken on January 18 in Washington state and on the same day activates its Emergency Operations Center (EOC) to respond to the emerging outbreak.</p>
+    <h4>First Peak in Cases</h4>
+    <p> The largest peak in hospitalizations occurred in December 2020 and January 2021, aligning with the largest peak in reported case rates.</p>
+    <h4>Second Peak in Cases</h4>
+    <p> Cases rose again around holiday seasons in December 2021, even after the vaccinations are in progress, raises concerns on the vaccinations.</p>
+</div>
+
+<script>
+
+// set the dimensions and margins of the graph
+var margin = {top: 50, right: 50, bottom: 50, left: 100},
+    width = 800 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// append the svg object to the body of the page
+var svg = d3.select("#my_dataviz")
+  .append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform",
+          "translate(" + margin.left + "," + margin.top + ")");
+
+//Read the data
+  d3.csv("https://raw.githubusercontent.com/Lp18-illinois/Narrative-Viz-project/main/us-states.csv", 
+
+  function(data) {  
+    data.forEach(function(d) {
+       d.date = new Date(d.date);
+       d.deaths = new Number(d.deaths);});
+  
+// List of groups (here I have one group per column)
+      var allStates = d3.map(data, function(d){return(d.state);}).keys().sort()
+
+// add the options to the State button
+    d3.select("#stateButton")
+      .selectAll('myOptions')
+      .data(allStates)
+      .enter()
+      .append('option')
+      .text(function (d) { return d; }) // text showed in the menu
+      .attr("value", function (d) { return d; }) // corresponding value returned by the button
+    
+// define scales 
+    const xScale = d3.scaleTime().domain(d3.extent(data, function(d) {return new Date(d.date);})).range([0,width]);
+    const yScale = d3.scaleLinear().domain(d3.extent(data, function(d) {return d.deaths;})).range([height,0]);
+    const stColor = d3.scaleOrdinal().domain(allStates).range(d3.schemeSet2);
+    
+// Features of the annotation
+    const annotations1 = [
+    { note: {
+      label: "Saw First Peak",
+      title: "Holiday Season"
+    },
+    x: 190,
+    y: 250,
+    dy: -20,
+    dx: -20
+    }]
+
+    const annotations2 = [
+    { note: {
+      label: "Saw Second Peak",
+      title: "Holiday Season"
+    },
+    x: 405,
+    y: 100,
+    dy: -20,
+    dx: -20
+    }]
+
+// Add annotation to the chart
+    const makeAnnotations1 = d3.annotation()
+        .annotations(annotations1)
+
+    const makeAnnotations2 = d3.annotation()
+        .annotations(annotations2)
+
+    const lineGen = d3.line()
+                      .x(d => xScale(d.date))
+                      .y(d => yScale(d.deaths));
+
+    const xAxis = d3.axisBottom(xScale);
+    const yAxis = d3.axisLeft(yScale);
+ 
+  //Initialize the chart with first Filter for First Scene.
+    var dataFilter = data.filter(function(d){return d.state==allStates[0];})
+ 
+    var sline = svg.append("path");
+
+  // This allows to find the closest X index of the mouse:
+    var bisect = d3.bisector(function(d) { return d.x; }).left;
+
+  // Create the circle that travels along the curve of chart
+    var focus = svg
+      .append('g')
+      .append('circle')
+      .style("fill", "none")
+      .attr("stroke", "black")
+      .attr('r', 8.5)
+      .style("opacity", 0)
+
+  // Create the text that travels along the curve of chart
+    var focusText = svg
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle")
+
+    sline
+       .datum(dataFilter)
+       .attr("fill", "none")
+       .attr("stroke", function(d){return stColor(allStates);})
+       .attr("stroke-width", 3)
+       .attr("d", lineGen);
+
+    svg.append("g")
+       .attr("class", "x-axis")
+       .attr("transform", "translate(0,400)")
+       .call(xAxis);
+ 
+    svg.append("g")
+       .attr("class", "y-axis")
+       .attr("transform", "translate(0,0)")
+       .call(yAxis);
+
+// Add X axis label:
+    svg.append("text")
+       .attr("text-anchor", "middle")
+       .attr("x", width / 2)
+       .attr("y", height + margin.top - 10)
+       .text("Quarters");
+
+// Add Y axis label:
+    svg.append("text")
+       .attr("text-anchor", "middle")
+       .attr("transform", "rotate(-90)")
+       .attr("y", -margin.left + margin.top - 10)
+       .attr("x", -height/2)
+       .text("Deaths");
+
+// Add cursor and display values
+    const cursor = svg.append("g")
+      .attr("class", "cursor")
+      .style("display", "none");
+
+    cursor.append("line")
+      .attr("class", "cursor-line-x")
+      .attr("y1", 0)
+      .attr("y2", height);
+
+    cursor.append("line")
+      .attr("class", "cursor-line-y")
+      .attr("x1", 0)
+      .attr("x2", width);
+
+    cursor.append("text")
+      .attr("class", "cursor-label-x")
+      .attr("x", width - 640)
+      .attr("y", height - 350);
+
+    cursor.append("text")
+      .attr("class", "cursor-label-y")
+      .attr("x", width - 640)
+      .attr("y", height - 365);
+
+    svg.append("rect")
+      .attr("class", "overlay")
+      .attr("width", width)
+      .attr("height", height)
+      .style("fill", "none")
+      .style("pointer-events", "all")
+      .on("mouseover", () => cursor.style("display", null))
+      .on("mouseout", () => cursor.style("display", "none"))
+      .on("mousemove", onMouseMove);
+
+//Create Annotations 
+    svg.append("g")
+      .call(makeAnnotations1);
+
+    svg.append("g")
+      .call(makeAnnotations2);
+
+    svg.append("line")
+       .attr("x1", 180)
+       .attr("y1", 0)
+       .attr("x2", 180)
+       .attr("y2", 400)
+       .attr("stroke-dasharray", "10", "20")
+       .attr("stroke", "grey")
+       .attr("fill-opacity",".5");
+
+    svg.append("line")
+       .attr("x1", 200)
+       .attr("y1", 0)
+       .attr("x2", 200)
+       .attr("y2", 400)
+       .attr("stroke-dasharray", "10", "20")
+       .attr("stroke", "grey")
+       .attr("fill-opacity",".5");
+
+    svg.append("line")
+       .attr("x1", 395)
+       .attr("y1", 0)
+       .attr("x2", 395)
+       .attr("y2", 400)
+       .attr("fill-opacity","0.1")
+       .attr("stroke-dasharray", "10", "20")
+       .attr("stroke", "grey");
+
+    svg.append("line")
+       .attr("x1", 415)
+       .attr("y1", 0)
+       .attr("x2", 415)
+       .attr("y2", 400)
+       .attr("fill-opacity","0.1")
+       .attr("stroke-dasharray", "10", "20")
+       .attr("stroke", "grey");
+
+  // What happens when the mouse move -> show the annotations at the right positions.
+    function onMouseMove() {
+      const x0 = xScale.invert(d3.mouse(this)[0]);
+      const bisect = d3.bisector(d => d.date).left;
+      const index = bisect(data, x0, 1);
+      const d0 = data[index - 1];
+      const d1 = data[index];
+      const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+
+      cursor.select(".cursor-line-x")
+        .attr("transform", 'translate(${xScale(d.date)}, 0)');
+
+      cursor.select(".cursor-line-y")
+        .attr("transform", 'translate(0, ${yScale(d.deaths)})');
+
+      cursor.select(".cursor-label-x")
+        .attr("transform", 'translate(${xScale(d.date)}, 0)')
+        .text("Date : " + d3.timeFormat("%Y-%m-%d")(d.date));
+
+      cursor.select(".cursor-label-y")
+        .attr("transform", 'translate(0, ${yScale(d.deaths)})')
+        .text("Deaths : " + d.deaths);
+    }
+
+  // A function that update the chart
+    function update(selectedState) {
+      // Create new data with the selection?
+      var dataFilter = data.filter(function(d){return d.state==selectedState;})
+      console.log(dataFilter)
+      
+      // Give these new data to update line
+       sline
+          .datum(dataFilter)
+          .attr("fill", "none")
+          .attr("stroke", function(d){ return stColor(selectedState);})
+          .attr("stroke-width", 3)
+          .transition()
+          .duration(1000)
+          .attr("d", lineGen);     
+    }
+
+  // When the button is changed, run the updateChart function
+    d3.select("#stateButton").on("change", function(d) {
+
+        // recover the option that has been chosen
+        var selectedState = d3.select(this).property("value")
+        // run the updateChart function with this selected option
+        update(selectedState)
+    });
+
+})
+
+</script>
+</body>
+</html>
