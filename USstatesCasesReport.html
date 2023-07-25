@@ -15,7 +15,7 @@
   <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesCasesReport.html'"> US States Cases </button>
   <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesDeathsReport.html'"> US States Deaths </button>
 </div>
-<br><br>
+<br>
 State: <select name="stateSelect" id="stateButton"></select>
 
 <!-- Load d3.js -->
@@ -177,6 +177,13 @@ var svg = d3.select("#my_dataviz")
        .attr("y", -margin.left + margin.top - 10)
        .attr("x", -height/2)
        .text("Cases");
+
+// Add Chart Title :
+    svg.append("text")
+       .attr("x", width / 2 )
+       .attr("y", -20)
+       .style("text-anchor", "middle")
+       .text("*******  US States Cases  *******");
 
 // Add cursor and display values
     const cursor = svg.append("g")

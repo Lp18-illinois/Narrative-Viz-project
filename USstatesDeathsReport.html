@@ -178,6 +178,13 @@ var svg = d3.select("#my_dataviz")
        .attr("x", -height/2)
        .text("Deaths");
 
+// Add Chart Title :
+   svg.append("text")
+      .attr("x", width / 2 )
+      .attr("y", -20)
+      .style("text-anchor", "middle")
+      .text("*******  US States Deaths  *******");
+
 // Add cursor and display values
     const cursor = svg.append("g")
       .attr("class", "cursor")
