@@ -10,16 +10,13 @@
   font-size: 35px;
   color: Black;
   }
-  h2 {
-    position:absolute;
-    width: 50%;
-    height: 30px;
-    background-color: rgb(61, 59, 59);
-    font-family: Verdana, sans-serif;
-    font-size: 25px;
-    color: white;
-    text-align : center;
-    top: 120;
+  #tooltip {
+    border: 1px solid #ccc;
+    position: absolute;
+    padding: 10px;
+    background-color: #fff;
+    display: none;
+    pointer-events: none;
   }
   .btn-group .button {
     background-color: lightyellow;

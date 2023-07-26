@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
  <meta name="viewport" content="width=device-width", initial-scale=1", charset=UTF-8>
- <title> Narrative Viz Project </title>
+ <title> US Covid Deaths </title>
  <link rel="stylesheet" type = "text/css" href="mystyle.css">
 </head>
 
@@ -39,7 +39,7 @@
 </div>
 
 <script>
-
+// Last Update - 07/25/23 - 4 PM
 // set the dimensions and margins of the graph
 var margin = {top: 50, right: 50, bottom: 50, left: 100},
     width = 800 - margin.left - margin.right,
@@ -102,24 +102,64 @@ var svg = d3.select("#my_dataviz")
                       .x(d => xScale(d.date))
                       .y(d => yScale(d.deaths));
 
+    const areaGen = d3.area()
+                      .x(d => xScale(d.date))
+                      .y0( height )
+                      .y1(d => yScale(d.deaths));
+
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
- 
-//Initialize the chart with first Filter for First Scene.
-  svg
+
+// Add a clipPath: everything out of this area won't be drawn.
+var clip = svg.append("defs").append("svg:clipPath")
+        .attr("id", "clip")
+        .append("svg:rect")
+        .attr("width", width )
+        .attr("height", height )
+        .attr("x", 0)
+        .attr("y", 0);
+
+// Add brushing
+    var brush = d3.brushX()                   // Add the brush feature using the d3.brush function
+        .extent( [ [0,0], [width,height] ] )  // initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+        .on("end", updateChart)               // Each time the brush selection changes, trigger the 'updateChart' function
+
+//Add Clip-Path
+    var line = svg.append("g")
+       .attr("clip-path", "url(#clip)")
+    var area = svg.append("g")
+       .attr("clip-path", "url(#clip)")
+
+  line
     .append("path")
     .datum(data)
+    .attr("class", "line")
     .attr("fill", "none")
     .attr("stroke", "steelblue")
     .attr("stroke-width", 3)
     .attr("d", lineGen);
 
-    svg.append("g")
+  area
+    .append("path")
+    .datum(data)
+    .attr("class", "area")
+    .attr("fill", "#69b3a2")
+    .attr("fill-opacity", .3)
+    .attr("stroke", "none")
+    .attr("d", areaGen);
+
+// call the brushing
+  line
+    .append("g")
+    .attr("class", "brush")
+    .call(brush);
+
+    x_Axis =  svg.append("g")
        .attr("class", "x-axis")
        .attr("transform", "translate(0,400)")
        .call(xAxis);
  
-    svg.append("g")
+    y_Axis = svg.append("g")
        .attr("class", "y-axis")
        .attr("transform", "translate(0,0)")
        .call(yAxis);
@@ -129,7 +169,7 @@ var svg = d3.select("#my_dataviz")
        .attr("text-anchor", "middle")
        .attr("x", width / 2)
        .attr("y", height + margin.top - 10)
-       .text("Quarters");
+       .text("Time");
 
 // Add Y axis label:
     svg.append("text")
@@ -145,7 +185,11 @@ var svg = d3.select("#my_dataviz")
     .attr("y", -20)
     .style("text-anchor", "middle")
     .text("**********  US Deaths  **********");
-  
+
+// A function that set idleTimeOut to null
+var idleTimeout 
+    function idled() { idleTimeout = null; }
+
 //Create Annotations 
     svg.append("g")
       .call(makeAnnotations1);
@@ -188,6 +232,36 @@ var svg = d3.select("#my_dataviz")
        .attr("fill-opacity","0.1")
        .attr("stroke-dasharray", "10", "20")
        .attr("stroke", "grey");
+
+// A function that update the chart for given boundaries
+function updateChart() {
+
+// What are the selected boundaries?
+extent = d3.event.selection
+
+// If no selection, back to initial coordinate. Otherwise, update X axis domain
+if(!extent){
+  if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
+  xScale.domain(d3.extent(data, d => new Date(d.date)))
+}else{
+  xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1]) ])
+  line.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+}
+
+// Update axis and line position
+x_Axis.transition().duration(1000).call(d3.axisBottom(xScale))
+line
+    .select('.line')
+    .transition()
+    .duration(1000)
+    .attr("d", lineGen)
+area
+    .select('.area')
+    .transition()
+    .duration(1000)
+    .attr("d", areaGen)
+}
+
 })
 
 </script>

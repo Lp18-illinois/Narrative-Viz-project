@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
  <meta name="viewport" content="width=device-width", initial-scale=1", charset=UTF-8>
- <title> Narrative Viz Project </title>
+ <title> US States Covid Deaths </title>
  <link rel="stylesheet" type = "text/css" href="mystyle.css">
 </head>
 
@@ -36,7 +36,7 @@ State: <select name="stateSelect" id="stateButton"></select>
 <!-- Rectangular box positioned at (200px, 100px) on the page -->
 <div class="rectangle">
     <h4> First Covid Case</h4>
-    <p> CDC reports the first laboratory-confirmed case of the 2019 Novel Coronavirus in the U.S. from samples taken on January 18 in Washington state and on the same day activates its Emergency Operations Center (EOC) to respond to the emerging outbreak.</p>
+    <p> CDC reported the first laboratory-confirmed case of the 2019 Novel Coronavirus in the U.S. from samples taken on January 18, 2020 in Washington state and on the same day activates its Emergency Operations Center (EOC) to respond to the emerging outbreak.</p>
     <h4>First Peak in Cases</h4>
     <p> The largest peak in hospitalizations occurred in December 2020 and January 2021, aligning with the largest peak in reported case rates.</p>
     <h4>Second Peak in Cases</h4>
@@ -44,7 +44,7 @@ State: <select name="stateSelect" id="stateButton"></select>
 </div>
 
 <script>
-
+// Last Update - 07/25/23 - 7 PM
 // set the dimensions and margins of the graph
 var margin = {top: 50, right: 50, bottom: 50, left: 100},
     width = 800 - margin.left - margin.right,
@@ -118,13 +118,20 @@ var svg = d3.select("#my_dataviz")
                       .x(d => xScale(d.date))
                       .y(d => yScale(d.deaths));
 
+    const areaGen = d3.area()
+                      .x(d => xScale(d.date))
+                      .y0( height )
+                      .y1(d => yScale(d.deaths));
+
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
  
   //Initialize the chart with first Filter for First Scene.
     var dataFilter = data.filter(function(d){return d.state==allStates[0];})
  
-    var sline = svg.append("path");
+    var line = svg.append("path");
+  
+    var area = svg.append("path");
 
   // This allows to find the closest X index of the mouse:
     var bisect = d3.bisector(function(d) { return d.x; }).left;
@@ -146,12 +153,20 @@ var svg = d3.select("#my_dataviz")
       .attr("text-anchor", "left")
       .attr("alignment-baseline", "middle")
 
-    sline
+    line
        .datum(dataFilter)
        .attr("fill", "none")
        .attr("stroke", function(d){return stColor(allStates);})
        .attr("stroke-width", 3)
        .attr("d", lineGen);
+
+       area
+       .datum(dataFilter)
+       .attr("class", "area")
+       .attr("fill", function(d){return stColor(allStates);})
+       .attr("fill-opacity", .3)
+       .attr("stroke", "none")
+       .attr("d", areaGen);
 
     svg.append("g")
        .attr("class", "x-axis")
@@ -168,7 +183,7 @@ var svg = d3.select("#my_dataviz")
        .attr("text-anchor", "middle")
        .attr("x", width / 2)
        .attr("y", height + margin.top - 10)
-       .text("Quarters");
+       .text("Time");
 
 // Add Y axis label:
     svg.append("text")
@@ -294,14 +309,24 @@ var svg = d3.select("#my_dataviz")
       console.log(dataFilter)
       
       // Give these new data to update line
-       sline
+      line
           .datum(dataFilter)
           .attr("fill", "none")
           .attr("stroke", function(d){ return stColor(selectedState);})
           .attr("stroke-width", 3)
           .transition()
           .duration(1000)
-          .attr("d", lineGen);     
+          .attr("d", lineGen);
+      
+      area
+         .datum(dataFilter)
+         .attr("class", "area")
+         .attr("fill", function(d){return stColor(selectedState);})
+         .attr("fill-opacity", .3)
+         .attr("stroke", "none")
+         .transition()
+         .duration(1000)
+         .attr("d", areaGen);
     }
 
   // When the button is changed, run the updateChart function

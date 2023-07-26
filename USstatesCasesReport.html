@@ -1,7 +1,7 @@
 <html lang="en">
 <head>
  <meta name="viewport" content="width=device-width", initial-scale=1", charset=UTF-8>
- <title> Narrative Viz Project </title>
+ <title> US States Covid Cases </title>
  <link rel="stylesheet" type = "text/css" href="mystyle.css">
 </head>
 
@@ -44,7 +44,7 @@ State: <select name="stateSelect" id="stateButton"></select>
 </div>
 
 <script>
-
+// Last Update - 07/25/23 - 7 PM
 // set the dimensions and margins of the graph
 var margin = {top: 50, right: 50, bottom: 50, left: 100},
     width = 800 - margin.left - margin.right,
@@ -118,18 +118,22 @@ var svg = d3.select("#my_dataviz")
                       .x(d => xScale(d.date))
                       .y(d => yScale(d.cases));
 
+    const areaGen = d3.area()
+                      .x(d => xScale(d.date))
+                      .y0( height )
+                      .y1(d => yScale(d.cases));
+
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
  
   //Initialize the chart with first Filter for First Scene.
     var dataFilter = data.filter(function(d){return d.state==allStates[0];})
  
-    var sline = svg.append("path");
+    var line = svg.append("path");
 
-  // This allows to find the closest X index of the mouse:
-    var bisect = d3.bisector(function(d) { return d.x; }).left;
+    var area = svg.append("path");
 
-  // Create the circle that travels along the curve of chart
+// Create the circle that travels along the curve of chart
     var focus = svg
       .append('g')
       .append('circle')
@@ -146,12 +150,20 @@ var svg = d3.select("#my_dataviz")
       .attr("text-anchor", "left")
       .attr("alignment-baseline", "middle")
 
-    sline
+    line
        .datum(dataFilter)
        .attr("fill", "none")
        .attr("stroke", function(d){return stColor(allStates);})
        .attr("stroke-width", 3)
        .attr("d", lineGen);
+
+    area
+       .datum(dataFilter)
+       .attr("class", "area")
+       .attr("fill", function(d){return stColor(allStates);})
+       .attr("fill-opacity", .3)
+       .attr("stroke", "none")
+       .attr("d", areaGen);
 
     svg.append("g")
        .attr("class", "x-axis")
@@ -168,7 +180,7 @@ var svg = d3.select("#my_dataviz")
        .attr("text-anchor", "middle")
        .attr("x", width / 2)
        .attr("y", height + margin.top - 10)
-       .text("Quarters");
+       .text("Time");
 
 // Add Y axis label:
     svg.append("text")
@@ -271,19 +283,22 @@ var svg = d3.select("#my_dataviz")
       const d0 = data[index - 1];
       const d1 = data[index];
       const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
+      console.log(d0.date);
+      console.log(d0.cases)
+      console.log(d0.state);
 
       cursor.select(".cursor-line-x")
-        .attr("transform", 'translate(${xScale(d.date)}, 0)');
+        .attr("transform", `translate(0,0)`);
 
       cursor.select(".cursor-line-y")
-        .attr("transform", 'translate(0, ${yScale(d.cases)})');
+        .attr("transform", `translate(0, 0})`);
 
       cursor.select(".cursor-label-x")
-        .attr("transform", 'translate(${xScale(d.date)}, 0)')
-        .text("Date : " + d3.timeFormat("%Y-%m-%d")(d.date));
+        .attr("transform", `translate(0, 0)`)
+        .text("Date : " + d3.timeFormat("%Y-%m-%d")(d0.date));
 
       cursor.select(".cursor-label-y")
-        .attr("transform", 'translate(0, ${yScale(d.cases)})')
+        .attr("transform", `translate(0, 0})`)
         .text("Cases : " + d.cases);
     }
 
@@ -294,14 +309,24 @@ var svg = d3.select("#my_dataviz")
       console.log(dataFilter)
       
       // Give these new data to update line
-       sline
+       line
           .datum(dataFilter)
           .attr("fill", "none")
           .attr("stroke", function(d){ return stColor(selectedState);})
           .attr("stroke-width", 3)
           .transition()
           .duration(1000)
-          .attr("d", lineGen);     
+          .attr("d", lineGen);
+      
+      area
+         .datum(dataFilter)
+         .attr("class", "area")
+         .attr("fill", function(d){return stColor(selectedState);})
+         .attr("fill-opacity", .3)
+         .attr("stroke", "none")
+         .transition()
+         .duration(1000)
+         .attr("d", areaGen);
     }
 
   // When the button is changed, run the updateChart function
