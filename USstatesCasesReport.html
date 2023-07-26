@@ -44,10 +44,10 @@ State: <select name="stateSelect" id="stateButton"></select>
 </div>
 
 <script>
-// Last Update - 07/25/23 - 7 PM
+// Last Update - 07/26/23 - 12 AM
 // set the dimensions and margins of the graph
-var margin = {top: 50, right: 50, bottom: 50, left: 100},
-    width = 800 - margin.left - margin.right,
+var margin = {top: 50, right: 150, bottom: 50, left: 100},
+    width = 900 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
@@ -125,30 +125,29 @@ var svg = d3.select("#my_dataviz")
 
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
- 
-  //Initialize the chart with first Filter for First Scene.
-    var dataFilter = data.filter(function(d){return d.state==allStates[0];})
- 
-    var line = svg.append("path");
-
-    var area = svg.append("path");
-
+  
 // Create the circle that travels along the curve of chart
-    var focus = svg
+   var focus = svg
       .append('g')
       .append('circle')
       .style("fill", "none")
       .attr("stroke", "black")
-      .attr('r', 8.5)
+      .attr('r', 5)
       .style("opacity", 0)
 
   // Create the text that travels along the curve of chart
-    var focusText = svg
+   var focusText = svg
       .append('g')
       .append('text')
       .style("opacity", 0)
       .attr("text-anchor", "left")
       .attr("alignment-baseline", "middle")
+
+   //Initialize the chart with first Filter for First Scene.
+    var dataFilter = data.filter(function(d){return d.state==allStates[0];})
+ 
+    var line = svg.append("path");
+    var area = svg.append("path");
 
     line
        .datum(dataFilter)
@@ -164,6 +163,17 @@ var svg = d3.select("#my_dataviz")
        .attr("fill-opacity", .3)
        .attr("stroke", "none")
        .attr("d", areaGen);
+    
+  // Create a rect on top of the svg area: this rectangle recovers mouse position
+    svg
+       .append('rect')
+       .style("fill", "none")
+       .style("pointer-events", "all")
+       .attr('width', width)
+       .attr('height', height)
+       .on('mouseover', mouseover)
+       .on('mousemove', mousemove)
+       .on('mouseout', mouseout);
 
     svg.append("g")
        .attr("class", "x-axis")
@@ -196,41 +206,6 @@ var svg = d3.select("#my_dataviz")
        .attr("y", -20)
        .style("text-anchor", "middle")
        .text("*******  US States Cases  *******");
-
-// Add cursor and display values
-    const cursor = svg.append("g")
-      .attr("class", "cursor")
-      .style("display", "none");
-
-    cursor.append("line")
-      .attr("class", "cursor-line-x")
-      .attr("y1", 0)
-      .attr("y2", height);
-
-    cursor.append("line")
-      .attr("class", "cursor-line-y")
-      .attr("x1", 0)
-      .attr("x2", width);
-
-    cursor.append("text")
-      .attr("class", "cursor-label-x")
-      .attr("x", width - 640)
-      .attr("y", height - 350);
-
-    cursor.append("text")
-      .attr("class", "cursor-label-y")
-      .attr("x", width - 640)
-      .attr("y", height - 365);
-
-    svg.append("rect")
-      .attr("class", "overlay")
-      .attr("width", width)
-      .attr("height", height)
-      .style("fill", "none")
-      .style("pointer-events", "all")
-      .on("mouseover", () => cursor.style("display", null))
-      .on("mouseout", () => cursor.style("display", "none"))
-      .on("mousemove", onMouseMove);
 
 //Create Annotations 
     svg.append("g")
@@ -274,35 +249,41 @@ var svg = d3.select("#my_dataviz")
        .attr("fill-opacity","0.1")
        .attr("stroke-dasharray", "10", "20")
        .attr("stroke", "grey");
+  
+ // What happens when the mouse move -> show the annotations at the right positions.
+  function mouseover() {
+    focus.style("opacity", 1)
+    focusText.style("opacity",1)
+  }
 
-  // What happens when the mouse move -> show the annotations at the right positions.
-    function onMouseMove() {
-      const x0 = xScale.invert(d3.mouse(this)[0]);
-      const bisect = d3.bisector(d => d.date).left;
-      const index = bisect(data, x0, 1);
-      const d0 = data[index - 1];
-      const d1 = data[index];
-      const d = x0 - d0.date > d1.date - x0 ? d1 : d0;
-      console.log(d0.date);
-      console.log(d0.cases)
-      console.log(d0.state);
-
-      cursor.select(".cursor-line-x")
-        .attr("transform", `translate(0,0)`);
-
-      cursor.select(".cursor-line-y")
-        .attr("transform", `translate(0, 0})`);
-
-      cursor.select(".cursor-label-x")
-        .attr("transform", `translate(0, 0)`)
-        .text("Date : " + d3.timeFormat("%Y-%m-%d")(d0.date));
-
-      cursor.select(".cursor-label-y")
-        .attr("transform", `translate(0, 0})`)
-        .text("Cases : " + d.cases);
+  function mousemove() {
+    // recover coordinate we need
+    // This allows to find the closest X index of the mouse:
+    var bisect = d3.bisector(function(d) { return d.date; }).left;
+    var x0 = xScale.invert(d3.mouse(this)[0]);
+    var i = bisect(dataFilter, x0, 1);
+    selectedData = dataFilter[i]
+    
+    focus
+      .attr("cx", xScale(selectedData.date))
+      .attr("cy", yScale(selectedData.cases))
+    focusText
+      .html(null) // Clear the previous content
+      .append("tspan")
+      .text("Date: " + d3.timeFormat("%Y-%m-%d")(selectedData.date))
+      .attr("x", xScale(selectedData.date) + 15)
+      .attr("y", yScale(selectedData.cases) - 30)
+      .append("tspan")
+      .text("Cases: " + selectedData.cases)
+      .attr("x", xScale(selectedData.date) + 15)
+      .attr("y", yScale(selectedData.cases) - 10);
     }
-
-  // A function that update the chart
+  function mouseout() {
+    focus.style("opacity", 0)
+    focusText.style("opacity", 0)
+  }
+  
+// A function that update the chart
     function update(selectedState) {
       // Create new data with the selection?
       var dataFilter = data.filter(function(d){return d.state==selectedState;})
@@ -329,7 +310,7 @@ var svg = d3.select("#my_dataviz")
          .attr("d", areaGen);
     }
 
-  // When the button is changed, run the updateChart function
+// When the button is changed, run the updateChart function
     d3.select("#stateButton").on("change", function(d) {
 
         // recover the option that has been chosen

@@ -2,21 +2,13 @@
   position:absolute;
   background-color: none;
   font-family: Verdana, sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   color: Black; 
   }
   h1 {
   font-family: Verdana, sans-serif;
   font-size: 35px;
   color: Black;
-  }
-  #tooltip {
-    border: 1px solid #ccc;
-    position: absolute;
-    padding: 10px;
-    background-color: #fff;
-    display: none;
-    pointer-events: none;
   }
   .btn-group .button {
     background-color: lightyellow;
@@ -25,7 +17,7 @@
     padding: 4px 12px;
     text-align: center;
     font-family: Verdana, sans-serif;
-    font-size: 16px;
+    font-size: 13px;
     cursor: pointer;
     float: left;
   }
@@ -44,8 +36,8 @@
   }
   .rectangle {
     position: absolute;
-    top: 140px; /* Adjust the 'top' value to set the vertical position */
-    left: 950px; /* Adjust the 'left' value to set the horizontal position */
+    top: 100px; /* Adjust the 'top' value to set the vertical position */
+    left: 900px; /* Adjust the 'left' value to set the horizontal position */
     width: 350px;
     height: 500px;
     background-color: white;
