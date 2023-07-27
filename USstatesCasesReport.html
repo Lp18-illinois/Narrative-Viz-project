@@ -36,15 +36,17 @@ State: <select name="stateSelect" id="stateButton"></select>
 <!-- Rectangular box positioned at (200px, 100px) on the page -->
 <div class="rectangle">
     <h4> First Covid Case</h4>
-    <p> CDC reports the first laboratory-confirmed case of the 2019 Novel Coronavirus in the U.S. from samples taken on January 18 in Washington state and on the same day activates its Emergency Operations Center (EOC) to respond to the emerging outbreak.</p>
+    <p> CDC reported the first laboratory-confirmed case of the 2019 Novel Coronavirus in the U.S. from samples taken on January 18, 2020 in Washington state and on the same day activates its Emergency Operations Center (EOC) to respond to the emerging outbreak.</p>
     <h4>First Peak in Cases</h4>
     <p> The largest peak in hospitalizations occurred in December 2020 and January 2021, aligning with the largest peak in reported case rates.</p>
     <h4>Second Peak in Cases</h4>
     <p> Cases rose again around holiday seasons in December 2021, even after the vaccinations are in progress, raises concerns on the vaccinations.</p>
+    <h4>Source of Data</h4>
+    <p> New York Times Report</p>
 </div>
 
 <script>
-// Last Update - 07/26/23 - 12 AM
+// Last Update - 07/26/23 - 7 PM - Tooltip Work Done
 // set the dimensions and margins of the graph
 var margin = {top: 50, right: 150, bottom: 50, left: 100},
     width = 900 - margin.left - margin.right,
@@ -126,25 +128,9 @@ var svg = d3.select("#my_dataviz")
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
   
-// Create the circle that travels along the curve of chart
-   var focus = svg
-      .append('g')
-      .append('circle')
-      .style("fill", "none")
-      .attr("stroke", "black")
-      .attr('r', 5)
-      .style("opacity", 0)
-
-  // Create the text that travels along the curve of chart
-   var focusText = svg
-      .append('g')
-      .append('text')
-      .style("opacity", 0)
-      .attr("text-anchor", "left")
-      .attr("alignment-baseline", "middle")
-
    //Initialize the chart with first Filter for First Scene.
-    var dataFilter = data.filter(function(d){return d.state==allStates[0];})
+    var selectedState = allStates[0]
+    var dataFilter = data.filter(function(d){return d.state==selectedState;})
  
     var line = svg.append("path");
     var area = svg.append("path");
@@ -163,10 +149,30 @@ var svg = d3.select("#my_dataviz")
        .attr("fill-opacity", .3)
        .attr("stroke", "none")
        .attr("d", areaGen);
-    
+
+// Create the circle that travels along the curve of chart
+var focus = svg
+      .append('g')
+      .attr("class", "line")
+      .append('circle')
+      .style("fill", "none")
+      .attr("stroke", "black")
+      .attr('r', 5)
+      .style("opacity", 0)
+
+  // Create the text that travels along the curve of chart
+   var focusText = svg
+      .append('g')
+      .attr("class", "line")
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle")
+
   // Create a rect on top of the svg area: this rectangle recovers mouse position
-    svg
+     svg
        .append('rect')
+       .attr("class","line")
        .style("fill", "none")
        .style("pointer-events", "all")
        .attr('width', width)
@@ -201,11 +207,11 @@ var svg = d3.select("#my_dataviz")
        .text("Cases");
 
 // Add Chart Title :
-    svg.append("text")
-       .attr("x", width / 2 )
-       .attr("y", -20)
-       .style("text-anchor", "middle")
-       .text("*******  US States Cases  *******");
+   svg.append("text")
+      .attr("x", margin.left -20)
+      .attr("y", -20 )
+      .style("text-anchor", "left")
+      .text("Scene 3 : Chart showing Covid-19 cases reported from 2020 to 2023 for US States.");
 
 //Create Annotations 
     svg.append("g")
@@ -259,6 +265,7 @@ var svg = d3.select("#my_dataviz")
   function mousemove() {
     // recover coordinate we need
     // This allows to find the closest X index of the mouse:
+
     var bisect = d3.bisector(function(d) { return d.date; }).left;
     var x0 = xScale.invert(d3.mouse(this)[0]);
     var i = bisect(dataFilter, x0, 1);
@@ -286,12 +293,12 @@ var svg = d3.select("#my_dataviz")
 // A function that update the chart
     function update(selectedState) {
       // Create new data with the selection?
-      var dataFilter = data.filter(function(d){return d.state==selectedState;})
-      console.log(dataFilter)
-      
+      dataFilter = data.filter(function(d){return d.state==selectedState;})
+
       // Give these new data to update line
        line
           .datum(dataFilter)
+          .attr("class", "line")
           .attr("fill", "none")
           .attr("stroke", function(d){ return stColor(selectedState);})
           .attr("stroke-width", 3)
@@ -308,13 +315,24 @@ var svg = d3.select("#my_dataviz")
          .transition()
          .duration(1000)
          .attr("d", areaGen);
+    // Create a rect on top of the svg area: this rectangle recovers mouse position
+    svg
+       .append('rect')
+       .attr("class","line")
+       .style("fill", "none")
+       .style("pointer-events", "all")
+       .attr('width', width)
+       .attr('height', height)
+       .on('mouseover', mouseover)
+       .on('mousemove', mousemove)
+       .on('mouseout', mouseout);
     }
 
 // When the button is changed, run the updateChart function
     d3.select("#stateButton").on("change", function(d) {
 
         // recover the option that has been chosen
-        var selectedState = d3.select(this).property("value")
+        selectedState = d3.select(this).property("value")
         // run the updateChart function with this selected option
         update(selectedState)
     });

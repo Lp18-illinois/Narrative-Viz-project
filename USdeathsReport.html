@@ -36,10 +36,12 @@
     <p> The largest peak in hospitalizations occurred in December 2020 and January 2021, aligning with the largest peak in reported case rates.</p>
     <h4>Second Peak in Cases</h4>
     <p> Cases rose again around holiday seasons in December 2021, even after the vaccinations are in progress, raises concerns on the vaccinations.</p>
+    <h4>Source of Data</h4>
+    <p> New York Times Report</p>
 </div>
 
 <script>
-// Last Update - 07/26/23 - 1 AM
+// Last Update - 07/26/23 - 3 PM - Tooltip Work Done
 // set the dimensions and margins of the graph
 var margin = {top: 50, right: 150, bottom: 50, left: 100},
     width = 900 - margin.left - margin.right,
@@ -61,8 +63,6 @@ var svg = d3.select("#my_dataviz")
     data.forEach(function(d) {
        d.date = new Date(d.date);
        d.deaths = new Number(d.deaths);});
-  
-       console.log(data);
 
 // define scales 
     const xScale = d3.scaleTime().domain(d3.extent(data, d => new Date(d.date))).range([0,width]);
@@ -110,14 +110,32 @@ var svg = d3.select("#my_dataviz")
     const xAxis = d3.axisBottom(xScale);
     const yAxis = d3.axisLeft(yScale);
 
+// Create the circle that travels along the curve of chart
+   var focus = svg
+      .append('g')
+      .append('circle')
+      .style("fill", "none")
+      .attr("stroke", "black")
+      .attr('r', 5)
+      .style("opacity", 0)
+
+  // Create the text that travels along the curve of chart
+   var focusText = svg
+      .append('g')
+      .append('text')
+      .style("opacity", 0)
+      .attr("text-anchor", "left")
+      .attr("alignment-baseline", "middle")
+
 // Add a clipPath: everything out of this area won't be drawn.
-var clip = svg.append("defs").append("svg:clipPath")
-        .attr("id", "clip")
-        .append("svg:rect")
-        .attr("width", width )
-        .attr("height", height )
-        .attr("x", 0)
-        .attr("y", 0);
+   var clip = svg.append("defs")
+       .append("svg:clipPath")
+       .attr("id", "clip")
+       .append("svg:rect")
+       .attr("width", width )
+       .attr("height", height )
+       .attr("x", 0)
+       .attr("y", 0);
 
 // Add brushing
     var brush = d3.brushX()                   // Add the brush feature using the d3.brush function
@@ -130,31 +148,42 @@ var clip = svg.append("defs").append("svg:clipPath")
     var area = svg.append("g")
        .attr("clip-path", "url(#clip)")
 
-  line
+line
     .append("path")
     .datum(data)
     .attr("class", "line")
     .attr("fill", "none")
-    .attr("stroke", "steelblue")
+    .attr("stroke", "orange")
     .attr("stroke-width", 3)
     .attr("d", lineGen);
 
-  area
+area
     .append("path")
     .datum(data)
     .attr("class", "area")
-    .attr("fill", "#69b3a2")
+    .attr("fill", "orange")
     .attr("fill-opacity", .3)
     .attr("stroke", "none")
     .attr("d", areaGen);
 
-// call the brushing
-  line
+// add the brushing to svg
+svg
     .append("g")
     .attr("class", "brush")
     .call(brush);
 
-    x_Axis =  svg.append("g")
+// Select the brush area on top of the svg area: this recovers mouse position
+  svg
+    .select(".brush")
+    .style("fill", "area")
+    .style("pointer-events", "all")
+    .attr('width', width)
+    .attr('height', height)
+    .on('mouseover', mouseover)
+    .on('mousemove', mousemove)
+    .on('mouseout', mouseout);
+
+   x_Axis =  svg.append("g")
        .attr("class", "x-axis")
        .attr("transform", "translate(0,400)")
        .call(xAxis);
@@ -180,11 +209,11 @@ var clip = svg.append("defs").append("svg:clipPath")
        .text("Deaths");
 
 // Add Chart Title :
-  svg.append("text")
-    .attr("x", width / 2 )
-    .attr("y", -20)
-    .style("text-anchor", "middle")
-    .text("**********  US Deaths  **********");
+svg.append("text")
+      .attr("x", margin.left -20)
+      .attr("y", -20 )
+      .style("text-anchor", "left")
+      .text("Scene 2 : Chart showing Covid-19 cases reported from 2020 to 2023 in US.");
 
 // A function that set idleTimeOut to null
 var idleTimeout 
@@ -255,12 +284,47 @@ line
     .transition()
     .duration(1000)
     .attr("d", lineGen)
+
 area
     .select('.area')
     .transition()
     .duration(1000)
     .attr("d", areaGen)
 }
+
+ // What happens when the mouse move -> show the tooltip at the right positions.
+ function mouseover() {
+    focus.style("opacity", 1)
+    focusText.style("opacity",1)
+  }
+
+  function mousemove() {
+    // recover coordinate we need
+    // This allows to find the closest X index of the mouse:
+    var bisect = d3.bisector(function(d) { return d.date; }).left;
+    var x0 = xScale.invert(d3.mouse(this)[0]);
+    var i = bisect(data, x0, 1);
+    selectedData = data[i]
+    
+    focus
+      .attr("cx", xScale(selectedData.date))
+      .attr("cy", yScale(selectedData.deaths))
+    focusText
+      .html(null) // Clear the previous content
+      .append("tspan")
+      .text("Date: " + d3.timeFormat("%Y-%m-%d")(selectedData.date))
+      .attr("x", xScale(selectedData.date) + 15)
+      .attr("y", yScale(selectedData.deaths) - 30)
+      .append("tspan")
+      .text("Cases: " + selectedData.deaths)
+      .attr("x", xScale(selectedData.date) + 15)
+      .attr("y", yScale(selectedData.deaths) - 10);
+
+    }
+  function mouseout() {
+    focus.style("opacity", 0)
+    focusText.style("opacity", 0)
+  }
 
 })
 
