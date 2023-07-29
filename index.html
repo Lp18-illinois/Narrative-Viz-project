@@ -6,15 +6,15 @@
 </head>
 
 <div class="rectangle1">
-  <h1>&nbsp; Narrative Visualization of Cumulative Covid-19 Cases & Deaths in US from 2020 to 2023.</h1>
-  <p1> &nbsp;&nbsp;Believe it or not, Covid is still a thing in US, even today! This is an interactive visualization to show the historical <b>cumulative figures</b> of Covid-19 in United States from January 2020 to March 2023 and the steep rises happened around <b>holiday seasons.</b></p1> <br>
+  <h1>&nbsp; Covid-19 Spread in US across the seasons from 2020 to 2023.</h1>
+  <p1> &nbsp;&nbsp;Believe it or not, Covid is still a thing in US, even today! This is an interactive visualization to show the historical <b>cumulative figures</b> of Covid-19 in United States from January 2020 to March 2023 and it's trend across the seasons.</p1> <br>
   <br>
-  <p1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Select Buttons below to see resepctive scenes!</b></p1>
+  <p1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Click Buttons below to toggle the scenes!</b></p1>
   <div class="btn-group">
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/index.html'"> <b>US Cases</b> </button>
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USdeathsReport.html'"> <b>US Deaths</b> </button>
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesCasesReport.html'"> <b>US States Cases</b> </button>
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesDeathsReport.html'"> <b>US States Deaths</b> </button>
+    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/index.html'"> <b> 1 </b> </button>
+    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USdeathsReport.html'"> <b> 2 </b> </button>
+    <button class="button" disabled> <b> 3 </b> </button>
+    <button class="button" disabled> <b> 4 </b> </button>
   </div>
 </div>
 <br><br><br><br><br><br><br><br><br><br><br><br>
@@ -27,19 +27,17 @@
 
 <!-- Rectangular box positioned at (50px, 900px) on the page -->
 <div class="rectangle2">
-  <h3> First Covid Case</h3>
-  <div class=p2> &nbsp;CDC reported the first laboratory-confirmed case of the 2019 Novel Coronavirus in the U.S. from samples taken on January 18, 2020 in Washington state and on the same day activates its Emergency Operations Center (EOC) to respond to the emerging outbreak.</p2>
-  <h3>First Steep Rise in Cases</h3>
-  <div class=p2> &nbsp;The largest peak in hospitalizations occurred in December 2020 and January 2021, aligning with the largest peak in reported case rates.</div>
-  <h3>Second Steep Rise in Cases</h3>
-    <div class=p2> &nbsp;Cases rose again signifcantly around in December 2021, again in holiday season, even when the vaccinations are in progress.</div>
   <h3>Source of Data</h3>
-    <div class=p2> &nbsp;<a href="https://github.com/nytimes/covid-19-data">NewYork Times Covid-19-data.</a> The data is the product of dozens of journalists working across several time zones to monitor news conferences, analyze data releases and seek clarification from public officials on how they categorize cases.</div>
+  <div class=p2> &nbsp;<a href="https://github.com/nytimes/covid-19-data">NewYork Times Covid-19-data.</a> The data is the product of dozens of journalists working across several time zones to monitor news conferences, analyze data releases and seek clarification from public officials on how they categorize cases.</div>
+  <h3>Trend in Cases</h3>
+  <div class=p2> &nbsp;The largest peak in hospitalizations occurred in December 2020 and January 2021, aligning with <b>winter season </b>time. Cases rose again signifcantly around in December 2021, again in <b>winter season</b>, even when the vaccinations are in progress. Although the spread was slowed down to some extend after the vaccinations.</div>
+  <h3>Chart Navigation Tips</h3>
+  <div class=p2> &nbsp; Click on the chart and drag horizontally to zoom in. Double click anywhere in the chart to restore to original view.</div>
 </div>
 
 <body>
 <script>
-// Last Update - 07/27/23 - 3 PM - NYTimes Link Added
+// Last Update - 07/28/23 - 5 PM - Work Complete
 // set the dimensions and margins of the graph
 var margin = {top: 50, right: 150, bottom: 50, left: 100},
     width = 900 - margin.left - margin.right,
@@ -67,34 +65,39 @@ var svg = d3.select("#my_dataviz")
     const yScale = d3.scaleLinear().domain(d3.extent(data, d=> d.cases)).range([height,0]);
 
 // Features of the annotation
-    const annotations1 = [
+    const annotations = [
     { note: {
-      label: "First Steep Rise",
-      title: "Holiday Season"
+      label: "1st Steep Rise",
+      title: "Winter Season"
     },
-    x: 190,
-    y: 300,
+    x: 170,
+    y: 340,
     dy: -20,
     dx: -20
-    }]
-
-    const annotations2 = [
-    { note: {
-      label: "Second Steep Rise",
-      title: "Holiday Season"
     },
-    x: 405,
-    y: 130,
+    { note: {
+      label: "Slowed Rate",
+      title: "Vaccination"
+    },
+    x: 280,
+    y: 265,
+    dy: -20,
+    dx: -20
+    },
+    { note: {
+      label: "2nd Steep Rise",
+      title: "Winter Season"
+    },
+    x: 400,
+    y: 150,
     dy: -20,
     dx: -20
     }]
 
 // Add annotation to the chart
-    const makeAnnotations1 = d3.annotation()
-        .annotations(annotations1)
-
-    const makeAnnotations2 = d3.annotation()
-        .annotations(annotations2)
+    var makeAnnotations = d3.annotation().annotations(annotations)
+//Create Annotations 
+    svg.append("g").call(makeAnnotations);
 
     const lineGen = d3.line()
                       .x(d => xScale(d.date))
@@ -112,9 +115,9 @@ var svg = d3.select("#my_dataviz")
    var focus = svg
       .append('g')
       .append('circle')
-      .style("fill", "none")
+      .style("fill", "blue")
       .attr("stroke", "black")
-      .attr('r', 5)
+      .attr('r', 3)
       .style("opacity", 0)
 
   // Create the text that travels along the curve of chart
@@ -215,49 +218,6 @@ svg.append("text")
     var idleTimeout 
     function idled() { idleTimeout = null; }
 
-//Create Annotations 
-    svg.append("g")
-      .call(makeAnnotations1);
-
-    svg.append("g")
-      .call(makeAnnotations2);
-
-    svg.append("line")
-       .attr("x1", 180)
-       .attr("y1", 0)
-       .attr("x2", 180)
-       .attr("y2", 400)
-       .attr("stroke-dasharray", "10", "20")
-       .attr("stroke", "grey")
-       .attr("fill-opacity",".5");
-
-    svg.append("line")
-       .attr("x1", 200)
-       .attr("y1", 0)
-       .attr("x2", 200)
-       .attr("y2", 400)
-       .attr("stroke-dasharray", "10", "20")
-       .attr("stroke", "grey")
-       .attr("fill-opacity",".5");
-
-    svg.append("line")
-       .attr("x1", 395)
-       .attr("y1", 0)
-       .attr("x2", 395)
-       .attr("y2", 400)
-       .attr("fill-opacity","0.1")
-       .attr("stroke-dasharray", "10", "20")
-       .attr("stroke", "grey");
-
-    svg.append("line")
-       .attr("x1", 415)
-       .attr("y1", 0)
-       .attr("x2", 415)
-       .attr("y2", 400)
-       .attr("fill-opacity","0.1")
-       .attr("stroke-dasharray", "10", "20")
-       .attr("stroke", "grey");
-
 // A function that update the chart for given boundaries
     function updateChart() {
 
@@ -268,9 +228,12 @@ svg.append("text")
       if(!extent){
         if (!idleTimeout) return idleTimeout = setTimeout(idled, 350); // This allows to wait a little bit
         xScale.domain(d3.extent(data, d => new Date(d.date)))
+        makeAnnotations = d3.annotation().annotations(annotations)
+        svg.append("g").call(makeAnnotations);
       }else{
         xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1]) ])
         line.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
+        d3.select(".annotations").remove();
       }
 
       // Update axis and line position

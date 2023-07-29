@@ -7,15 +7,15 @@
 
 <!-- Rectangular box positioned at top -->
 <div class="rectangle1">
-  <h1>&nbsp; Narrative Visualization of Cumulative Covid-19 Cases & Deaths in US from 2020 to 2023.</h1>
-  <p1> &nbsp;&nbsp;Believe it or not, Covid is still a thing in US, even today! This is an interactive visualization to show the historical <b>cumulative figures</b> of Covid-19 in United States from January 2020 to March 2023 and the steep rises happened around <b>holiday seasons.</b></p1> <br>
+  <h1>&nbsp; Covid-19 Spread in US across the seasons from 2020 to 2023.</h1>
+  <p1> &nbsp;&nbsp;Believe it or not, Covid is still a thing in US, even today! This is an interactive visualization to show the historical <b>cumulative figures</b> of Covid-19 in United States from January 2020 to March 2023 and it's <b>trend across the seasons.</b></p1> <br>
   <br>
-  <p1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Select Buttons below to see resepctive scenes!</b></p1>
+  <p1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Click Buttons below to toggle the scenes!</b></p1>
   <div class="btn-group">
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/index.html'"> <b>US Cases</b> </button>
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USdeathsReport.html'"> <b>US Deaths</b> </button>
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesCasesReport.html'"> <b>US States Cases</b> </button>
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesDeathsReport.html'"> <b>US States Deaths</b> </button>
+    <button class="button" disabled> <b> 1 </b> </button>
+    <button class="button" disabled> <b> 2 </b> </button>
+    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesCasesReport.html'"> <b> 3 </b> </button>
+    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesDeathsReport.html'"> <b> 4 </b> </button>
   </div>
 </div>
 <br><br><br><br><br><br><br><br><br><br><br>
@@ -30,19 +30,17 @@
 
 <!-- Rectangular box positioned at right of graph -->
 <div class="rectangle2">
-  <h3> First Covid Case</h3>
-  <div class=p2> &nbsp;CDC reported the first laboratory-confirmed case of the 2019 Novel Coronavirus in the U.S. from samples taken on January 18, 2020 in Washington state and on the same day activates its Emergency Operations Center (EOC) to respond to the emerging outbreak.</p2>
-  <h3>First Steep Rise in Cases</h3>
-  <div class=p2> &nbsp;The largest peak in hospitalizations occurred in December 2020 and January 2021, aligning with the largest peak in reported case rates.</div>
-  <h3>Second Steep Rise in Cases</h3>
-    <div class=p2> &nbsp;Cases rose again signifcantly around in December 2021, again in holiday season, even when the vaccinations are in progress.</div>
   <h3>Source of Data</h3>
-    <div class=p2> &nbsp;<a href="https://github.com/nytimes/covid-19-data">NewYork Times Covid-19-data.</a> The data is the product of dozens of journalists working across several time zones to monitor news conferences, analyze data releases and seek clarification from public officials on how they categorize cases.</div>
+  <div class=p2> &nbsp;<a href="https://github.com/nytimes/covid-19-data">NewYork Times Covid-19-data.</a> The data is the product of dozens of journalists working across several time zones to monitor news conferences, analyze data releases and seek clarification from public officials on how they categorize cases.</div>
+  <h3>Trend in State Deaths </h3>
+  <div class=p2> &nbsp; While the winter season trend is not visible in all the states in this chart, but it's clearly visible in four most populous states : <b> California, Texas, Florida, New-York.</b></div>
+  <h3>Chart Navigation Tips</h3>
+  <div class=p2> &nbsp; Select a state name from the dropdown <b>State </b>option from top left corner of the chart and see the change in chart.</div>
 </div>
 
 <body>
 <script>
-// Last Update - 07/27/23 - 3 PM - NYTimes Link Added
+// Last Update - 07/28/23 - 5 PM - Work Complete
 // set the dimensions and margins of the graph
 var margin = {top: 50, right: 150, bottom: 50, left: 100},
     width = 900 - margin.left - margin.right,
@@ -83,21 +81,19 @@ var svg = d3.select("#my_dataviz")
     const stColor = d3.scaleOrdinal().domain(allStates).range(d3.schemeSet2);
     
 // Features of the annotation
-    const annotations1 = [
+const annotations = [
     { note: {
-      label: "First Steep Rise",
-      title: "Holiday Season"
+      label: "1st Steep Rise",
+      title: "Winter Season"
     },
-    x: 190,
+    x: 205,
     y: 250,
     dy: -20,
     dx: -20
-    }]
-
-    const annotations2 = [
+    },
     { note: {
-      label: "Second Steep Rise",
-      title: "Holiday Season"
+      label: "2nd Steep Rise",
+      title: "Winter Season"
     },
     x: 405,
     y: 100,
@@ -106,11 +102,11 @@ var svg = d3.select("#my_dataviz")
     }]
 
 // Add annotation to the chart
-    const makeAnnotations1 = d3.annotation()
-        .annotations(annotations1)
+    var makeAnnotations = d3.annotation().annotations(annotations)
 
-    const makeAnnotations2 = d3.annotation()
-        .annotations(annotations2)
+//Create Annotations 
+    svg.append("g")
+      .call(makeAnnotations);
 
     const lineGen = d3.line()
                       .x(d => xScale(d.date))
@@ -209,44 +205,19 @@ var focus = svg
       .style("text-anchor", "")
       .text("Scene 4 : Chart showing Covid-19 deaths reported from 2020 to 2023 for US States.");
 
-//Create Annotations 
-    svg.append("g")
-      .call(makeAnnotations1);
-
-    svg.append("g")
-      .call(makeAnnotations2);
-
     svg.append("line")
-       .attr("x1", 180)
+       .attr("x1", 205)
        .attr("y1", 0)
-       .attr("x2", 180)
+       .attr("x2", 205)
        .attr("y2", 400)
        .attr("stroke-dasharray", "10", "20")
        .attr("stroke", "grey")
        .attr("fill-opacity",".5");
 
     svg.append("line")
-       .attr("x1", 200)
+       .attr("x1", 405)
        .attr("y1", 0)
-       .attr("x2", 200)
-       .attr("y2", 400)
-       .attr("stroke-dasharray", "10", "20")
-       .attr("stroke", "grey")
-       .attr("fill-opacity",".5");
-
-    svg.append("line")
-       .attr("x1", 395)
-       .attr("y1", 0)
-       .attr("x2", 395)
-       .attr("y2", 400)
-       .attr("fill-opacity","0.1")
-       .attr("stroke-dasharray", "10", "20")
-       .attr("stroke", "grey");
-
-    svg.append("line")
-       .attr("x1", 415)
-       .attr("y1", 0)
-       .attr("x2", 415)
+       .attr("x2", 405)
        .attr("y2", 400)
        .attr("fill-opacity","0.1")
        .attr("stroke-dasharray", "10", "20")
