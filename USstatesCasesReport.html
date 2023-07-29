@@ -86,7 +86,7 @@ var svg = d3.select("#my_dataviz")
       label: "1st Steep Rise",
       title: "Winter Season"
     },
-    x: 210,
+    x: 195,
     y: 340,
     dy: -20,
     dx: -20
@@ -95,7 +95,7 @@ var svg = d3.select("#my_dataviz")
       label: "2nd Steep Rise",
       title: "Winter Season"
     },
-    x: 460,
+    x: 425,
     y: 150,
     dy: -20,
     dx: -20
@@ -147,9 +147,9 @@ var focus = svg
       .append('g')
       .attr("class", "line")
       .append('circle')
-      .style("fill", "none")
+      .style("fill", "black")
       .attr("stroke", "black")
-      .attr('r', 5)
+      .attr('r', 3)
       .style("opacity", 0)
 
   // Create the text that travels along the curve of chart
@@ -159,7 +159,7 @@ var focus = svg
       .append('text')
       .style("opacity", 0)
       .attr("text-anchor", "left")
-      .attr("alignment-baseline", "middle")
+      .attr("alignment-baseline", "left")
 
   // Create a rect on top of the svg area: this rectangle recovers mouse position
      svg
@@ -207,18 +207,18 @@ var focus = svg
       .text("Scene 3 : Chart showing Covid-19 cases reported from 2020 to 2023 for US States.");
 
     svg.append("line")
-       .attr("x1", 210)
+       .attr("x1", 195)
        .attr("y1", 0)
-       .attr("x2", 210)
+       .attr("x2", 195)
        .attr("y2", 400)
        .attr("stroke-dasharray", "10", "20")
        .attr("stroke", "grey")
        .attr("fill-opacity",".5");
 
     svg.append("line")
-       .attr("x1", 460)
+       .attr("x1", 425)
        .attr("y1", 0)
-       .attr("x2", 460)
+       .attr("x2", 425)
        .attr("y2", 400)
        .attr("fill-opacity","0.1")
        .attr("stroke-dasharray", "10", "20")
