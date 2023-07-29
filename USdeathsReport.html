@@ -31,7 +31,7 @@
   <div class=p2> &nbsp;<a href="https://github.com/nytimes/covid-19-data">NewYork Times Covid-19-data.</a> The data is the product of dozens of journalists working across several time zones to monitor news conferences, analyze data releases and seek clarification from public officials on how they categorize cases.</div>
   <h3>Trend in Deaths</h3>
   <div class=p2> &nbsp;Simillar to trend in cases, higher deaths occurred in December 2020 and January 2021, aligning with <b>winter season </b>time. Death tolls rose again signifcantly around in December 2021, again in <b>winter season</b>, even when the vaccinations are in progress. </div>
-  <h3>Chart Navigation Tips</h3>
+  <h3>Chart ExplorationTips</h3>
   <div class=p2> &nbsp; Click on the chart and drag horizontally to zoom in. Double click anywhere in the chart to restore to original view.</div>
 </div>
 
@@ -39,8 +39,8 @@
 <script>
 // Last Update - 07/28/23 - 5 PM - Work Complete
 // set the dimensions and margins of the graph
-var margin = {top: 50, right: 150, bottom: 50, left: 100},
-    width = 900 - margin.left - margin.right,
+var margin = {top: 50, right: 150, bottom: 50, left: 220},
+    width = 1050 - margin.left - margin.right + 50,
     height = 500 - margin.top - margin.bottom;
 
 // append the svg object to the body of the page
@@ -69,7 +69,7 @@ var svg = d3.select("#my_dataviz")
       label: "1st Steep Rise",
       title: "Winter Season"
     },
-    x: 190,
+    x: 220,
     y: 270,
     dy: -20,
     dx: -20
@@ -78,7 +78,7 @@ var svg = d3.select("#my_dataviz")
       label: "Slowed Rate",
       title: "Vaccination"
     },
-    x: 270,
+    x: 300,
     y: 190,
     dy: -20,
     dx: -20
@@ -87,7 +87,7 @@ var svg = d3.select("#my_dataviz")
       label: "2nd Steep Rise",
       title: "Winter Season"
     },
-    x: 400,
+    x: 450,
     y: 110,
     dy: -20,
     dx: -20
@@ -204,16 +204,17 @@ svg
     svg.append("text")
        .attr("text-anchor", "middle")
        .attr("transform", "rotate(-90)")
-       .attr("y", -margin.left + margin.top - 10)
+       .attr("y", -margin.left + 150)
        .attr("x", -height/2)
        .text("Deaths");
 
 // Add Chart Title :
 svg.append("text")
-      .attr("x", margin.left -20)
+      .attr("x", margin.left-200 )
       .attr("y", -20 )
+      .attr("font-weight","bold")
       .style("text-anchor", "left")
-      .text("Scene 2 : Chart showing Covid-19 cases reported from 2020 to 2023 in US.");
+      .text("Scene 2 : Chart showing Covid-19 deaths reported from 2020 to 2023 in US.");
 
 // A function that set idleTimeOut to null
 var idleTimeout 

@@ -2,7 +2,7 @@
   position:absolute;
   background-color: none;
   font-family: Verdana, sans-serif;
-  font-size: 13px;
+  font-size: 15px;
   color: Black; 
   }
   h1 {
@@ -33,19 +33,19 @@
   .rectangle1 {
     position: absolute;
     top: 1px; /* Adjust the 'top' value to set the vertical position */
-    left: 10px; /* Adjust the 'left' value to set the horizontal position */
-    width: 1240px;
-    height: 140px;
+    left: 200px; /* Adjust the 'left' value to set the horizontal position */
+    width: 1440px;
+    height: 150px;
     background-color: white;
     border: 1px solid #04b8c5;
     padding: 10px;
   }
   .rectangle2 {
     position: absolute;
-    top: 164px; /* Adjust the 'top' value to set the vertical position */
-    left: 900px; /* Adjust the 'left' value to set the horizontal position */
-    width: 350px;
-    height: 480px;
+    top: 173px; /* Adjust the 'top' value to set the vertical position */
+    left: 1200px; /* Adjust the 'left' value to set the horizontal position */
+    width: 440px;
+    height: 550px;
     background-color: white;
     border: 1px solid #bd7303;
     padding: 10px;
