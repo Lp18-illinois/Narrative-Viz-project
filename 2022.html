@@ -7,17 +7,18 @@
 
 <div class="rectangle1">
   <h1>&nbsp; Covid-19 Spread in US across the seasons from 2020 to 2023.</h1>
-  <p1> &nbsp;&nbsp;Believe it or not, Covid is still a thing in US, even today! This is an interactive slideshow visualization to show the historical <b>cumulative figures</b> of Covid-19 in United States from January 2020 to March 2023 and it's <b>trend across the seasons</b>.
-    <br></p1><br>
-    <p1><b>Click Buttons below to toggle the scenes!</b></p1>
+  <p1> &nbsp;&nbsp;Believe it or not, Covid is still a thing in US, even today! This is an interactive slideshow visualization to show the historical 
+    <b>cumulative figures</b> of Covid-19 in United States from January 2020 to March 2023 and it's <b>trend across the seasons</b>.
+  <br></p1><br>
+  <p1><b>Click Buttons below to toggle the scenes!</b></p1>
   <div class="btn-group">
     <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/index.html'"> <b> 2020 </b> </button>
+    <
+    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/2021.html'"> <b> 2021 </b> </button>
+    <
+    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/2022.html'"> <b> 2022 </b> </button>
     >
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USdeathsReport.html'"> <b> 2021 </b> </button>
-    >
-    <button class="button" disabled> <b> 2022 </b> </button>
-    >
-    <button class="button" disabled> <b> 2023 </b> </button>
+    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/2022.html'"> <b> 2023 </b> </button>
   </div>
 </div>
 <br><br><br><br><br><br><br><br><br><br><br><br>
@@ -31,11 +32,13 @@
 <!-- Rectangular box positioned at (50px, 900px) on the page -->
 <div class="rectangle2">
   <h3>Source of Data</h3>
-  <div class=p2> &nbsp;<a href="https://github.com/nytimes/covid-19-data">NewYork Times Covid-19-data.</a> The data is the product of dozens of journalists working across several time zones to monitor news conferences, analyze data releases and seek clarification from public officials on how they categorize cases.</div>
-  <h3>Trend in Cases in 2020</h3>
-  <div class=p2> &nbsp;In the beginning of year <b>2020</b>, covid cases rises slowly but <b>cases grew signficantly towards the end in the winter season</b>, raising concern across the country. 
-    The <b> largest peak </b>in hospitalizations occurred in December 2020, aligning with the largest record in the Covid-19 cases. <br>
-    &nbsp;&nbsp;While everyone predicted the covid-19 is unstoppable now, let's check in next slide how it turned out in 2021. Click <b>2021</b> from the buttons!</div>
+  <div class=p2> &nbsp;<a href="https://github.com/nytimes/covid-19-data">NewYork Times Covid-19-data.</a> The data is the product of dozens of journalists working across several time 
+    zones to monitor news conferences, analyze data releases and seek clarification from public officials on how they categorize cases.</div>
+  <h3>Trend in Cases in 2022</h3>
+  <div class=p2> &nbsp; Covid cases rose signficantly in the first quarter of 2022 across the country, which now termed as <b>second wave</b>. 
+    After first quarter, the cases seems to be little in control, possibly indicating few factors in play like second shot of vaccinations and herd immunity.<br>
+    &nbsp;&nbsp;Ok, but what about in winter months ? This time it seems to be in steady rise instead of steep. 
+    Though our data is collected till <b> March 2023 </b>, let's check in next slide how it turned out in beginning of 2023. Click <b>2023</b> from the buttons!</div>
   <h3>Chart Exploration Tips</h3>
   <div class=p2> &nbsp; Click on the chart and drag horizontally to zoom in. Double click anywhere in the chart to restore to original view.</div>
 </div>
@@ -87,6 +90,32 @@ var svg = d3.select("#my_dataviz")
     y: 170,
     dy: -20,
     dx: -20
+    },
+    { note: {
+      label: "Slowed Spread",
+      title: "Vaccination"
+    },
+    x: 310,
+    y: 270,
+    dy: 20,
+    dx: 20
+    },
+    { note: {
+      title: "Prediction 2022"
+    },
+    x: 495,
+    y: 70,
+    dy: -20,
+    dx: -20
+    },
+    { note: {
+      label: "2nd Steep Rise",
+      title: "Winter Season"
+    },
+    x: 430,
+    y: 130,
+    dy: 20,
+    dx: 20
     }]
 
 // Add annotation to the chart
@@ -135,12 +164,12 @@ var svg = d3.select("#my_dataviz")
 //Initialize the chart with first Filter for First Scene.
     var line = svg.append("g")
        .attr("clip-path", "url(#clip)")
-    var area = svg.append("g")
-       .attr("clip-path", "url(#clip)")
-    var dataFilter = data.filter(function(d){return d.date.getFullYear()==2020;})
+    var dataFilter = data.filter(function(d){return (d.date.getFullYear()==2020 || d.date.getFullYear()==2021 || d.date.getFullYear()==2022);})
     var curve = d3.line().curve(d3.curveNatural);
-    var points = [[203, 323], [293, 190],[353, 120]];
+    var points1 = [[203, 323], [293, 190],[353, 120]];
+    var points2 = [[417, 190], [490, 80],[550, 30]];
 
+       console.log(dataFilter)
   line
     .append("path")
     .datum(dataFilter)
@@ -198,11 +227,20 @@ svg.append("text")
       .attr("y", -20 )
       .attr("font-weight","bold")
       .style("text-anchor", "left")
-      .text("Scene 1 : US Cases in Covid-19 reported from 2020.");
+      .text("Scene 3 : US Cases in Covid-19 reported from 2020 to 2022.");
 
   svg.append("path")
        .attr("class","curve")
-       .attr('d', curve(points))
+       .attr('d', curve(points1))
+       .attr("fill-opacity","0.1")
+       .attr("stroke-dasharray", "10", "100")
+       .attr("stroke-width", 3)
+       .attr("fill", "none")
+       .attr("stroke", "steelblue");
+
+  svg.append("path")
+       .attr("class","curve")
+       .attr('d', curve(points2))
        .attr("fill-opacity","0.1")
        .attr("stroke-dasharray", "10", "100")
        .attr("stroke-width", 3)
@@ -227,7 +265,14 @@ svg.append("text")
         svg.append("g").call(makeAnnotations);
         svg.append("path")
            .attr("class","curve")
-           .attr('d', curve(points))
+           .attr('d', curve(points1))
+           .attr("fill-opacity","0.1")
+           .attr("stroke-dasharray", "10", "100")
+           .attr("stroke-width", 3)
+           .attr("stroke", "steelblue");
+        svg.append("path")
+           .attr("class","curve")
+           .attr('d', curve(points2))
            .attr("fill-opacity","0.1")
            .attr("stroke-dasharray", "10", "100")
            .attr("stroke-width", 3)
@@ -236,7 +281,7 @@ svg.append("text")
         xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1]) ])
         line.select(".brush").call(brush.move, null) // This remove the grey brush area as soon as the selection has been done
         d3.select(".annotations").remove();
-        d3.select(".curve").remove();
+        d3.selectAll(".curve").remove();
       }
 
       // Update axis and line position
@@ -259,7 +304,7 @@ svg.append("text")
     // This allows to find the closest X index of the mouse:
     var bisect = d3.bisector(function(d) { return d.date; }).left;
     var x0 = xScale.invert(d3.mouse(this)[0]);
-    var i = bisect(dataFilter, x0, 1);
+    var i = bisect(data, x0, 1);
     selectedData = dataFilter[i]
     
     focus
