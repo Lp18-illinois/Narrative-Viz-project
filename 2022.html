@@ -269,6 +269,7 @@ svg.append("text")
            .attr("fill-opacity","0.1")
            .attr("stroke-dasharray", "10", "100")
            .attr("stroke-width", 3)
+           .attr("fill", "none")
            .attr("stroke", "steelblue");
         svg.append("path")
            .attr("class","curve")
@@ -276,6 +277,7 @@ svg.append("text")
            .attr("fill-opacity","0.1")
            .attr("stroke-dasharray", "10", "100")
            .attr("stroke-width", 3)
+           .attr("fill", "none")
            .attr("stroke", "steelblue");
       }else{
         xScale.domain([ xScale.invert(extent[0]), xScale.invert(extent[1]) ])
