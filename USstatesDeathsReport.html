@@ -8,18 +8,27 @@
 <!-- Rectangular box positioned at top -->
 <div class="rectangle1">
   <h1>&nbsp; Covid-19 Spread in US across the seasons from 2020 to 2023.</h1>
-  <p1> &nbsp;&nbsp;Believe it or not, Covid is still a thing in US, even today! This is an interactive slideshow visualization to show the historical <b>cumulative figures</b> of Covid-19 in United States from January 2020 to March 2023 and it's <b>trend across the seasons.</b></p1> <br>
-  <br>
-  <p1>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>Click Buttons below to toggle the scenes!</b></p1>
+  <p1> &nbsp;&nbsp;Believe it or not, Covid is still a thing in US, even today! This is an interactive slideshow visualization to show the historical <b>cumulative figures</b> of Covid-19 in United States from January 2020 to March 2023 and it's <b>trend across the seasons</b>.
+  <br></p1>
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+  <p1><b>Click Buttons below to toggle the scenes!</b></p1><br>
   <div class="btn-group">
-    <button class="button" disabled> <b> 1 </b> </button>
-    <button class="button" disabled> <b> 2 </b> </button>
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesCasesReport.html'"> <b> 3 </b> </button>
-    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesDeathsReport.html'"> <b> 4 </b> </button>
+    <button class="button" disabled> <b> US States </b> </button>
+    <
+    <button class="button" disabled> <b> US Cases </b> </button>
+    <
+    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesCasesReport.html'"> <b> US State's Cases </b> </button>
+    <
+    <button class="button" onclick="window.location.href='https://lp18-illinois.github.io/Narrative-Viz-project/USstatesDeathsReport.html'"> <b> US State's Deaths </b> </button>
   </div>
 </div>
 <br><br><br><br><br><br><br><br><br><br><br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>State : </b><select name="stateSelect" id="stateButton"></select>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<b>State : </b><select name="stateSelect" id="stateButton"></select>
 <!-- Load d3.js , d3-annotation, d3-scale-chromatic-->
 <script src="https://d3js.org/d3.v4.js"></script>
 <script src="https://rawgit.com/susielu/d3-annotation/master/d3-annotation.min.js"></script>
@@ -200,11 +209,11 @@ var focus = svg
 
 // Add Chart Title :
    svg.append("text")
-      .attr("x", margin.left-100)
+      .attr("x", margin.left-20)
       .attr("y", -20 )
       .attr("font-weight","bold")
       .style("text-anchor", "left")
-      .text("Scene 4 : Chart showing Covid-19 deaths reported from 2020 to 2023 for US States.");
+      .text("Scene 4 : US State's Deaths in Covid-19 reported from 2020 to 2023.");
 
     svg.append("line")
        .attr("x1", 220)
